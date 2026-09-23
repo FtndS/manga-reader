@@ -3,42 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manga Reader (private)</title>
+  <title>Manga Reader</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
     <h1>Manga Reader</h1>
-    <p class="sub">à¸ªà¹ˆà¸§à¸™à¸•à¸±à¸§ Â· à¹à¸›à¸¥à¹„à¸—à¸¢ / à¸­à¸±à¸‡à¸à¸¤à¸©</p>
+    <p class="sub">อ่านส่วนตัว · แปลไทย / อังกฤษ</p>
   </header>
-
   <section class="upload card">
-    <h2>à¸­à¸±à¸›à¹‚à¸«à¸¥à¸”à¸šà¸—</h2>
-    <label>à¸Šà¸·à¹ˆà¸­à¸šà¸— <input id="title" type="text" placeholder="chapter 1" /></label>
-    <label>ZIP à¸£à¸¹à¸› à¸«à¸£à¸·à¸­à¸£à¸¹à¸›à¹€à¸”à¸µà¸¢à¸§ <input id="file" type="file" accept=".zip,image/*" /></label>
-    <button id="uploadBtn" type="button">à¸­à¸±à¸›à¹‚à¸«à¸¥à¸” + à¹€à¸£à¸´à¹ˆà¸¡à¹à¸›à¸¥</button>
+    <h2>อัปโหลดบท</h2>
+    <label>ชื่อบท <input id="title" type="text" placeholder="chapter 1" /></label>
+    <label>ZIP รูป หรือรูปเดียว <input id="file" type="file" accept=".zip,image/*" /></label>
+    <button id="uploadBtn" type="button">อัปโหลด + เริ่มแปล</button>
     <p id="uploadMsg" class="msg"></p>
   </section>
-
   <section class="list card">
-    <h2>à¸šà¸—à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”</h2>
+    <h2>บททั้งหมด</h2>
     <div id="chapters"></div>
   </section>
-
   <section id="reader" class="reader card hidden">
     <div class="reader-top">
-      <button id="backBtn" type="button">â† à¸à¸¥à¸±à¸š</button>
+      <button id="backBtn" type="button">กลับ</button>
       <h2 id="readerTitle"></h2>
       <div class="lang">
-        <button type="button" data-lang="th" class="lang-btn active">à¹„à¸—à¸¢</button>
+        <button type="button" data-lang="th" class="lang-btn active">ไทย</button>
         <button type="button" data-lang="en" class="lang-btn">EN</button>
-        <button type="button" data-lang="src" class="lang-btn">à¸•à¹‰à¸™à¸‰à¸šà¸±à¸š</button>
+        <button type="button" data-lang="src" class="lang-btn">ต้นฉบับ</button>
       </div>
     </div>
     <p id="statusLine" class="msg"></p>
     <div id="pages"></div>
   </section>
-
   <script src="app.js"></script>
 </body>
 </html>
