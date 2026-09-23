@@ -1,0 +1,11 @@
+data/
+.env
+.htpasswd*
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+web/dist/
+.DS_Store
+*.log

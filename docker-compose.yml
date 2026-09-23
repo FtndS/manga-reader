@@ -1,0 +1,77 @@
+services:
+  api:
+    build: ./api
+    container_name: manga-api
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      REDIS_URL: redis://redis:6379/0
+      LIBRETRANSLATE_URL: http://libretranslate:5000
+      OCR_LANGS: ${OCR_LANGS:-korean}
+    volumes:
+      - ./data:/data
+    depends_on:
+      - redis
+      - libretranslate
+    networks:
+      - manga-net
+      - portfolio-net
+    restart: unless-stopped
+    mem_limit: 512m
+
+  worker:
+    build: ./worker
+    container_name: manga-worker
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      REDIS_URL: redis://redis:6379/0
+      LIBRETRANSLATE_URL: http://libretranslate:5000
+      OCR_LANGS: ${OCR_LANGS:-korean}
+    volumes:
+      - ./data:/data
+    depends_on:
+      - redis
+      - libretranslate
+    networks:
+      - manga-net
+    restart: unless-stopped
+    # OCR is heavy â€” one worker, one page at a time
+    mem_limit: 2g
+
+  web:
+    build: ./web
+    container_name: manga-web
+    networks:
+      - manga-net
+      - portfolio-net
+    restart: unless-stopped
+    mem_limit: 128m
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: manga-libretranslate
+    environment:
+      LT_LOAD_ONLY: en,th,ko,ja,zh
+      LT_DISABLE_WEB_UI: "true"
+      LT_UPDATE_MODELS: "true"
+    networks:
+      - manga-net
+    restart: unless-stopped
+    mem_limit: 1536m
+
+  redis:
+    image: redis:7-alpine
+    container_name: manga-redis
+    networks:
+      - manga-net
+    restart: unless-stopped
+    mem_limit: 64m
+
+networks:
+  manga-net:
+    driver: bridge
+  # Join PortDiary network on VPS (name may differ â€” check: docker network ls)
+  portfolio-net:
+    external: true
+    name: portfolio-app_portfolio-network

@@ -1,0 +1,27 @@
+# Local PC: do NOT require PortDiary network
+services:
+  api:
+    ports:
+      - "8000:8000"
+    networks:
+      - manga-net
+  worker:
+    networks:
+      - manga-net
+  web:
+    ports:
+      - "5173:80"
+    networks:
+      - manga-net
+  libretranslate:
+    networks:
+      - manga-net
+  redis:
+    networks:
+      - manga-net
+
+networks:
+  manga-net:
+    driver: bridge
+  portfolio-net:
+    external: false
