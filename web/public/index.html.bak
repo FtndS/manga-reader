@@ -14,15 +14,6 @@
   <section class="upload card">
     <h2>อัปโหลดบท</h2>
     <label>ชื่อบท <input id="title" type="text" placeholder="chapter 1" /></label>
-    <label>ภาษาต้นฉบับ
-      <select id="sourceLang">
-        <option value="japan" selected>Japanese (ญี่ปุ่น)</option>
-        <option value="korean">Korean (เกาหลี)</option>
-        <option value="chinese">Chinese (จีน)</option>
-        <option value="en">English (อังกฤษ)</option>
-        <option value="thai">Thai (ไทย)</option>
-      </select>
-    </label>
     <label>ZIP รูป หรือรูปเดียว <input id="file" type="file" accept=".zip,image/*" /></label>
     <div id="pasteZone" class="paste-zone" tabindex="0">
       <p><strong>หรือวางรูปที่นี่</strong> (Ctrl+V / Cmd+V)</p>

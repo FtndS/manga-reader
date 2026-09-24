@@ -14,6 +14,19 @@ from rq import Queue
 
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
 CHAPTERS_DIR = DATA_DIR / "chapters"
+ALLOWED_SOURCE_LANGS = {"japan", "korean", "en", "thai", "chinese"}
+def normalize_source_lang(v: str) -> str:
+    v = (v or "").strip().lower()
+    aliases = {
+        "japanese": "japan", "ja": "japan", "jp": "japan",
+        "ko": "korean", "kr": "korean",
+        "english": "en",
+        "th": "thai",
+        "zh": "chinese", "cn": "chinese", "china": "chinese",
+    }
+    v = aliases.get(v, v)
+    return v if v in ALLOWED_SOURCE_LANGS else "japan"
+
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
 
 CHAPTERS_DIR.mkdir(parents=True, exist_ok=True)
@@ -82,8 +95,21 @@ def get_translation(chapter_id: str, page_stem: str):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+
+@app.delete("/api/chapters/{chapter_id}")
+def delete_chapter(chapter_id: str):
+    import shutil
+    chapter_dir = CHAPTERS_DIR / chapter_id
+    if not chapter_dir.exists() or not chapter_dir.is_dir():
+        raise HTTPException(404, "chapter not found")
+    # prevent path escape
+    if ".." in chapter_id or "/" in chapter_id or "\\" in chapter_id:
+        raise HTTPException(400, "invalid id")
+    shutil.rmtree(chapter_dir)
+    return {"ok": True, "deleted": chapter_id}
+
 @app.post("/api/chapters/upload")
-async def upload_chapter(title: str = "untitled", file: UploadFile = File(...)):
+async def upload_chapter(title: str = "untitled", source_lang: str = "japan", file: UploadFile = File(...)):
     chapter_id = f"{slugify(title)}-{uuid.uuid4().hex[:6]}"
     chapter_dir = CHAPTERS_DIR / chapter_id
     pages_dir = chapter_dir / "pages"
@@ -126,9 +152,11 @@ async def upload_chapter(title: str = "untitled", file: UploadFile = File(...)):
 
     from datetime import datetime, timezone
 
+    src_lang = normalize_source_lang(source_lang)
     meta = {
         "id": chapter_id,
         "title": title,
+        "source_lang": src_lang,
         "pages": pages,
         "status": "queued",
         "done_pages": 0,
@@ -139,6 +167,6 @@ async def upload_chapter(title: str = "untitled", file: UploadFile = File(...)):
 
     # enqueue one job per page (worker processes sequentially via single worker)
     for page in pages:
-        q.enqueue("jobs.process_page", chapter_id, page, job_timeout="20m")
+        q.enqueue("jobs.process_page", chapter_id, page, job_timeout="20m")  # source_lang in meta.json
 
     return meta
